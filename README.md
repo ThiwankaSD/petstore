@@ -4,13 +4,18 @@
 
 MicroProfile Starter has generated this MicroProfile application for you.
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This project uses Quarkus Microprofile runtime, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
-## Packaging and running the application
+## Step 1 : Build and deploy the API
 
-If you want to build an _??ber-jar_, execute the following command:
+## Build the Jar File
+At First, you need to fork this repository from the github & clone to a local machine or you can directly clone to your local machine from the following command.
+
+    git clone https://github.com/ThiwankaSD/petstore
+
+After cloning you can build the petstore app as a _??uber-jar_, by execute the following command:
 
     ./gradlew build -Dquarkus.package.type=uber-jar
 
@@ -25,7 +30,8 @@ The application can be also packaged using simple:
 It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
 Be aware that it is not an _??ber-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
 
-To launch the test page, open your browser at the following URL
+To launch the test page, open your browser at the following URL. 
+It will lanuch the server stub as a HTML page with the supported microprofile specifications
 
     http://localhost:8080/index.html
 
@@ -37,16 +43,19 @@ You can run your application in dev mode that enables live coding using:
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
 
-## Creating a native executable
+## Creating a native executable using GraalVM
+
+Native Image combine your jar code(classes), libraries, dependencies, runtime libraries compact together which provide platform independence to the application.
+So it a standalone executable file.
 
 Mind having GRAALVM_HOME set to your Mandrel or GraalVM installation.
 
-You can create a native executable using:
+You can create a native executable using the following code snippet:
 
     ./gradlew build -Dquarkus.package.type=native
 
 Or, if you don't have [Mandrel](https://github.com/graalvm/mandrel/releases/) or
-[GraalVM](https://github.com/graalvm/graalvm-ce-builds/releases) installed, you can run the native executable
+[GraalVM](https://github.com/graalvm/graalvm-ce-builds/releases) installed locally, you can run the native executable
 build in a container using:
 
     ./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true
@@ -60,6 +69,25 @@ You can then execute your native executable with:
     ./build/petstore-runner
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
+
+## Containerize the native Image using docker
+
+Upto now we have a native executable file. Using docker we can containerize the the native image and export it to the production level.For that use,
+
+    ./gradlew build -Dquarkus.package.type=native -Dquarkus.native.container-build=true -Dquarkus.container-image.build=true
+
+## Deploy on the Docker Compose
+
+Docker compose will give visulize our container stats. But nowadays ochestration platforms like kubernetes can facilitate many services over docker compose.
+navigate to deploy directory[./deploy](https://github.com/ThiwankaSD/petstore/tree/master/deploy), then input the following commands,
+
+    cd ./deploy
+    docker -compose up -d
+    
+Now go the browser and open up http://localhost:3000/dashboards
+use the default credentials to the grafana dashboard using username and password as admin
+
+It will open up the Microprofile Metrics dashboard
 
 ## Specification examples
 
@@ -116,6 +144,3 @@ Allow the participation in distributed tracing of your requests through various 
 To show this capability download [Jaeger](https://www.jaegertracing.io/download/#binaries) and run ```./jaeger-all-in-one```.
 Open [http://localhost:16686/](http://localhost:16686/) to see the traces. Mind that you have to access your demo app endpoint for any traces to show on Jaeger UI.
 
-## Deploying Application
-
-To deploy the demo app on a docker-compose please visit [./deploy](https://github.com/rasika/petstore/tree/master/deploy)
