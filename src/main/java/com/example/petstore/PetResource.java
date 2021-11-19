@@ -27,6 +27,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 @Path("/v1")
 public class PetResource {
 	List<Pet> globalpets = new ArrayList<Pet>();
+	List<PetType> globalpettypes = new ArrayList<PetType>();
 	
 	@Path("/pets")
 	@Produces("application/json")
@@ -71,7 +72,7 @@ public class PetResource {
 		pets.add(pet4);
 		pets.add(pet5);
 		globalpets = pets;
-		return Response.ok(pets).build();
+		return Response.ok(globalpets).build();
 	}
 	@GET
     @Path("/pets/{petId}")
@@ -121,8 +122,10 @@ public class PetResource {
     @APIResponses(value = { 
         @APIResponse(responseCode = "405", description = "Invalid input")
     })
-    public Response addPetType(@Valid Pet body) {
-        return Response.ok().entity("magic!").build();
+    public Response addPetType(@Valid PetType body) {
+    	PetType newPetType = new PetType();
+    	newPetType = body;
+        return Response.ok().entity(newPetType).build();
     }
     @DELETE
     @Path("/pets/{petId}")
@@ -132,10 +135,19 @@ public class PetResource {
         @APIResponse(responseCode = "400", description = "Invalid ID supplied"),
         @APIResponse(responseCode = "404", description = "Pet not found")
     })
-    public Response deletePet( @PathParam("petId")
-
-    @Parameter(description = "Pet id to delete") Long petId, @HeaderParam("api_key") String apiKey) {
-        return Response.ok().entity("magic!").build();
+    public Response deletePet( @PathParam("petId") @Parameter(description = "Pet id to delete") Long petId, @HeaderParam("api_key") String apiKey) {
+    	//Pet pet = new Pet();
+		if (petId < 0) {
+			return Response.status(Status.NOT_FOUND).build();
+		}else {
+			
+			for(Pet p : globalpets) {
+				if(p.getPetId().intValue() == petId) {
+					globalpets.remove(p);
+				}
+			}
+		}
+		return Response.ok(globalpets).build();
     }
     @DELETE
     @Path("/petType/{petTypeId}")
@@ -144,10 +156,19 @@ public class PetResource {
         @APIResponse(responseCode = "400", description = "Invalid ID supplied"),
         @APIResponse(responseCode = "404", description = "PetType not found")
     })
-    public Response deletePetType( @PathParam("petTypeId")
-
-    @Parameter(description = "PetType id to delete") Long petTypeId, @HeaderParam("api_key") String apiKey) {
-        return Response.ok().entity("magic!").build();
+    public Response deletePetType( @PathParam("petTypeId") @Parameter(description = "PetType id to delete") Long petTypeId, @HeaderParam("api_key") String apiKey) {
+    	//PetType petType = new PetType();
+		if (petTypeId < 0) {
+			return Response.status(Status.NOT_FOUND).build();
+		}else {
+			
+			for(PetType pt : globalpettypes) {
+				if(pt.getId().intValue() == petTypeId) {
+					globalpettypes.remove(pt);
+				}
+			}
+		}
+		return Response.ok(globalpettypes).build();
     }
     @GET
     @Path("/pets/search/{petName}")
@@ -158,20 +179,43 @@ public class PetResource {
         @APIResponse(responseCode = "400", description = "Invalid ID supplied"),
         @APIResponse(responseCode = "404", description = "Pet not found")
     })
-    public Response getPetByName( @PathParam("petName")
-
-    @Parameter(description = "name of pet to return") String petName) {
-        return Response.ok().entity("magic!").build();
+    public Response getPetByName( @PathParam("petName") @Parameter(description = "name of pet to return") String petName) {
+    	Pet pet = new Pet();
+			
+    	for(Pet p : globalpets) {
+			if(p.getPetName().equals(petName)) {
+				pet = p;
+			}
+		}
+		
+		return Response.ok(pet).build();
     }
     @GET
     @Path("/petType")
     @Operation(summary = "Get all pets in the store", description = "")
     @APIResponses(value = { 
-        @APIResponse(responseCode = "200", description = "get pettypes sucessfully"),
+        @APIResponse(responseCode = "200", description = "All PetsTypes", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(ref = "PetType"))),
         @APIResponse(responseCode = "404", description = "PetType not found")
     })
     public Response getPetTypes() {
-        return Response.ok().entity("magic!").build();
+    	List<PetType> pettypes = new ArrayList<PetType>();
+		PetType petT1 = new PetType();
+		petT1.setId(1L);
+		petT1.setName("Dog");
+		
+		PetType petT2 = new PetType();
+		petT2.setId(2L);
+		petT2.setName("Cat");
+		
+		PetType petT3 = new PetType();
+		petT3.setId(3L);
+		petT3.setName("Bird");
+		
+		pettypes.add(petT1);
+		pettypes.add(petT2);
+		pettypes.add(petT3);
+		globalpettypes = pettypes;
+		return Response.ok(globalpettypes).build();
     }
     
     @PUT

@@ -9,7 +9,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Schema(name = "PetType")
-public class PetType   {
+public class PetType{
 
   @Schema(required = true, description = "PetType id")
   @JsonProperty("id")
