@@ -12,21 +12,35 @@ import static org.hamcrest.Matchers.allOf;
 @QuarkusTest
 public class PetResourceTest {
 
+	/**
+	 * Test Pet ArrayList work accordingly
+	 */
 	@Test
     public void testPetEndpoint() {
         given()
           .when().get("/v1/pets")
           .then()
              .statusCode(200);
-//             .body(hasItem(
-// 		            allOf(
-//    		                hasEntry("pet_id", "1"),
-//    		                hasEntry("pet_type", "Dog"),
-//    		                hasEntry("pet_name", "Boola"),
-//    		                hasEntry("pet_age", "3")
-//    		            )
-//    		      )
-//    		 );
     }
+	/**
+	 * Test negative ids cannot be search in Pet Model
+	 */
+	@Test
+	public void testNegativeIdsAvoid() {
+		given()
+        .when().get("/v1/pets/-1")
+        .then()
+           .statusCode(404);
+	}
+	/**
+	 * Check Pet Types can access successfully
+	 */
+	@Test
+	public void testPetTypeEndpoint() {
+		given()
+        .when().get("/v1/petType")
+        .then()
+           .statusCode(200);
+	}
 
 }
