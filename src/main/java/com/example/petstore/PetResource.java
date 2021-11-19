@@ -104,20 +104,20 @@ public class PetResource {
 	@POST
     @Path("/pets")
     @Consumes({ "application/json" })
+	@Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Add a new pet to the store", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "200", description = "Pet Added successfully"),
         @APIResponse(responseCode = "405", description = "Invalid input")
     })
-    public Response addPet(@Valid Pet body) {
-		Pet newpet = new Pet();
-		newpet = body;
-		globalpets.add(newpet);
-        return Response.ok().entity(newpet).build();
+    public Response addPet(Pet body) {
+		globalpets.add(body);
+        return Response.ok().entity(globalpets).build();
     }
     @POST
     @Path("/petType")
-    @Consumes({ "application/json"})
+    @Consumes({ "application/json" })
+    @Produces({ "application/json" })
     @Operation(summary = "Add a new pettype to the store", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "405", description = "Invalid input")
@@ -129,13 +129,14 @@ public class PetResource {
     }
     @DELETE
     @Path("/pets/{petId}")
+    @Produces({ "application/json"})
     @Operation(summary = "Deletes a pet", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "200", description = "Pet deleted successfully"),
         @APIResponse(responseCode = "400", description = "Invalid ID supplied"),
         @APIResponse(responseCode = "404", description = "Pet not found")
     })
-    public Response deletePet( @PathParam("petId") @Parameter(description = "Pet id to delete") Long petId, @HeaderParam("api_key") String apiKey) {
+    public Response deletePet( @PathParam("petId") @Parameter(description = "Pet id to delete") int petId) {
     	//Pet pet = new Pet();
 		if (petId < 0) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -151,12 +152,13 @@ public class PetResource {
     }
     @DELETE
     @Path("/petType/{petTypeId}")
+    @Produces({ "application/json"})
     @Operation(summary = "Deletes a pet type", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "400", description = "Invalid ID supplied"),
         @APIResponse(responseCode = "404", description = "PetType not found")
     })
-    public Response deletePetType( @PathParam("petTypeId") @Parameter(description = "PetType id to delete") Long petTypeId, @HeaderParam("api_key") String apiKey) {
+    public Response deletePetType( @PathParam("petTypeId") @Parameter(description = "PetType id to delete") int petTypeId) {
     	//PetType petType = new PetType();
 		if (petTypeId < 0) {
 			return Response.status(Status.NOT_FOUND).build();
@@ -192,6 +194,7 @@ public class PetResource {
     }
     @GET
     @Path("/petType")
+    @Produces({ "application/json"})
     @Operation(summary = "Get all pets in the store", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "200", description = "All PetsTypes", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(ref = "PetType"))),
@@ -221,6 +224,7 @@ public class PetResource {
     @PUT
     @Path("/pets")
     @Consumes({ "application/json" })
+    @Produces({ "application/json" })
     @Operation(summary = "Update an existing pet", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "200", description = "Pet Updated successfully"),
@@ -228,18 +232,25 @@ public class PetResource {
         @APIResponse(responseCode = "404", description = "Pet not found"),
         @APIResponse(responseCode = "405", description = "Validation exception")
     })
-    public Response updatePet(@Valid Pet body) {
-        return Response.ok().entity("magic!").build();
+    public Response updatePet(Pet body) {
+    	if(body.getPetId()>0) {
+    		globalpets.add(body);
+    	}
+        return Response.ok().entity(globalpets).build();
     }
     @PUT
     @Path("/petType")
     @Consumes({ "application/json"})
+    @Produces({ "application/json"})
     @Operation(summary = "Update an existing petType", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "400", description = "Invalid ID supplied"),
         @APIResponse(responseCode = "404", description = "PetType not found"),
         @APIResponse(responseCode = "405", description = "Validation exception")
     })
-    public Response updatePetTypes(@Valid Pet body) {
-        return Response.ok().entity("magic!").build();
+    public Response updatePetTypes(@Valid PetType body) {
+    	if(body.getId()>0) {
+    		globalpettypes.add(body);
+    	}
+        return Response.ok().entity(globalpettypes).build();
     }}
