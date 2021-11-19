@@ -94,7 +94,6 @@ public class PetResource {
 				}
 			}
 		}
-
 		return Response.ok(pet).build();
 		
 	}
@@ -110,7 +109,10 @@ public class PetResource {
         @APIResponse(responseCode = "405", description = "Invalid input")
     })
     public Response addPet(@Valid Pet body) {
-        return Response.ok().entity("magic!").build();
+		Pet newpet = new Pet();
+		newpet = body;
+		globalpets.add(newpet);
+        return Response.ok().entity(newpet).build();
     }
     @POST
     @Path("/petType")
