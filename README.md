@@ -89,7 +89,7 @@ use the default credentials to the grafana dashboard using username and password
 
 It will open up the Microprofile Metrics dashboard
 
-## Step 02: How to run test suite
+## Step 02: How to run the test suite
 
 Run the test suite can run by two ways,
 
