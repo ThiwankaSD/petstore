@@ -24,10 +24,12 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 
-@Path("/v1/pets")
-@Produces("application/json")
+@Path("/v1")
 public class PetResource {
-
+	List<Pet> globalpets = new ArrayList<Pet>();
+	
+	@Path("/pets")
+	@Produces("application/json")
 	@APIResponses(value = {
 			@APIResponse(responseCode = "200", description = "All Pets", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(ref = "Pet"))) })
 	@GET
@@ -50,27 +52,48 @@ public class PetResource {
 		pet3.setPetAge(2);
 		pet3.setPetName("Peththappu");
 		pet3.setPetType("Bird");
+		
+		Pet pet4 = new Pet();
+		pet4.setPetId(4);
+		pet4.setPetAge(5);
+		pet4.setPetName("Jimmy");
+		pet4.setPetType("Dog");
+		
+		Pet pet5 = new Pet();
+		pet5.setPetId(5);
+		pet5.setPetAge(6);
+		pet5.setPetName("Kit");
+		pet5.setPetType("Fish");
 
 		pets.add(pet1);
 		pets.add(pet2);
 		pets.add(pet3);
+		pets.add(pet4);
+		pets.add(pet5);
+		globalpets = pets;
 		return Response.ok(pets).build();
 	}
-
-	@APIResponses(value = {
-			@APIResponse(responseCode = "200", description = "Pet for id", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(ref = "Pet"))),
-			@APIResponse(responseCode = "404", description = "No Pet found for the id.") })
 	@GET
-	@Path("{petId}")
+    @Path("/pets/{petId}")
+    @Produces({ "application/json"})
+    @Operation(summary = "Find pet by ID", description = "Returns a single pet")
+    @APIResponses(value = { 
+        @APIResponse(responseCode = "200", description = "successful pet searchoperation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Pet.class))),
+        @APIResponse(responseCode = "400", description = "Invalid ID supplied"),
+        @APIResponse(responseCode = "404", description = "Pet not found")
+    })
 	public Response getPet(@PathParam("petId") int petId) {
+		Pet pet = new Pet();
 		if (petId < 0) {
 			return Response.status(Status.NOT_FOUND).build();
+		}else {
+			
+			for(Pet p : globalpets) {
+				if(p.getPetId().intValue() == petId) {
+					pet = p;
+				}
+			}
 		}
-		Pet pet = new Pet();
-		pet.setPetId(petId);
-		pet.setPetAge(3);
-		pet.setPetName("Buula");
-		pet.setPetType("Dog");
 
 		return Response.ok(pet).build();
 		
@@ -80,7 +103,7 @@ public class PetResource {
 	 */
 	@POST
     @Path("/pets")
-    @Consumes({ "application/json", "application/xml" })
+    @Consumes({ "application/json" })
     @Operation(summary = "Add a new pet to the store", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "200", description = "Pet Added successfully"),
@@ -91,7 +114,7 @@ public class PetResource {
     }
     @POST
     @Path("/petType")
-    @Consumes({ "application/json", "application/xml" })
+    @Consumes({ "application/json"})
     @Operation(summary = "Add a new pettype to the store", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "405", description = "Invalid input")
@@ -109,7 +132,7 @@ public class PetResource {
     })
     public Response deletePet( @PathParam("petId")
 
- @Parameter(description = "Pet id to delete") Long petId, @HeaderParam("api_key") String apiKey) {
+    @Parameter(description = "Pet id to delete") Long petId, @HeaderParam("api_key") String apiKey) {
         return Response.ok().entity("magic!").build();
     }
     @DELETE
@@ -121,26 +144,12 @@ public class PetResource {
     })
     public Response deletePetType( @PathParam("petTypeId")
 
- @Parameter(description = "PetType id to delete") Long petTypeId, @HeaderParam("api_key") String apiKey) {
+    @Parameter(description = "PetType id to delete") Long petTypeId, @HeaderParam("api_key") String apiKey) {
         return Response.ok().entity("magic!").build();
     }
     @GET
-    @Path("/pets/{petId}")
-    @Produces({ "application/json", "application/xml" })
-    @Operation(summary = "Find pet by ID", description = "Returns a single pet")
-    @APIResponses(value = { 
-        @APIResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Pet.class))),
-        @APIResponse(responseCode = "400", description = "Invalid ID supplied"),
-        @APIResponse(responseCode = "404", description = "Pet not found")
-    })
-    public Response getPetById( @PathParam("petId")
-
- @Parameter(description = "ID of pet to return") Long petId) {
-        return Response.ok().entity("magic!").build();
-    }
-    @GET
-    @Path("/pets/{petName}")
-    @Produces({ "application/json", "application/xml" })
+    @Path("/pets/search/{petName}")
+    @Produces({ "application/json"})
     @Operation(summary = "Find pet by Name", description = "Returns a single pet")
     @APIResponses(value = { 
         @APIResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Pet.class))),
@@ -149,7 +158,7 @@ public class PetResource {
     })
     public Response getPetByName( @PathParam("petName")
 
- @Parameter(description = "name of pet to return") String petName) {
+    @Parameter(description = "name of pet to return") String petName) {
         return Response.ok().entity("magic!").build();
     }
     @GET
@@ -165,7 +174,7 @@ public class PetResource {
     
     @PUT
     @Path("/pets")
-    @Consumes({ "application/json", "application/xml" })
+    @Consumes({ "application/json" })
     @Operation(summary = "Update an existing pet", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "200", description = "Pet Updated successfully"),
@@ -178,7 +187,7 @@ public class PetResource {
     }
     @PUT
     @Path("/petType")
-    @Consumes({ "application/json", "application/xml" })
+    @Consumes({ "application/json"})
     @Operation(summary = "Update an existing petType", description = "")
     @APIResponses(value = { 
         @APIResponse(responseCode = "400", description = "Invalid ID supplied"),
