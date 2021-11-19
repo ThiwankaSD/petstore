@@ -89,7 +89,47 @@ use the default credentials to the grafana dashboard using username and password
 
 It will open up the Microprofile Metrics dashboard
 
-## Specification examples
+## Step 02: How to run test suite
+
+Run the test suite can run by two ways,
+
+1. In the Step 1 process automatically run the default test cases in the file 
+
+    /petstore/src/test/java/org/acme/PetResourceTest.java
+    
+2. Using eclipse you can execcute the test suite manually use right click at the PetResourceTest.java and Run as JUnit Test.
+   It will seperately build the testcases.
+   
+## Step 03: How to run a CURL commands once deployed
+
+### Run the GET commands
+    curl -i -X GET http://localhost:8080/
+   
+    curl -i -X GET http://localhost:8080/v1/pets to see all the pets
+   
+    curl -i -X GET http://localhost:8080/v1/petType to see all the pet types
+   
+    curl -i -X GET http://localhost:8080/v1/pets/1 to get a particular pet
+   
+    curl -i -X GET http://localhost:8080/v1/pets/Boola to search a pet called Boola
+   
+### Run the POST commands
+    curl -i -X POST -H 'Content-Type: application/json' -d '{"petAge": 3,"petId": 1,"petName": "Boola","petType": "Dog"}' http://localhost:8080/v1/pets will add a new pet
+    
+    curl -i -X POST -H 'Content-Type: application/json' -d '{"id": 3,"name": "Dog"}' http://localhost:8080/v1/petType will add a new pet Type
+
+### Run the DELETE commands
+    curl -i -X DELETE http://localhost:8080/v1/pets/1 will delete id = 1 pet
+    
+    curl -i -X DELETE http://localhost:8080/v1/petType/1 will delete id = 1 pet type
+
+    Run the following command twice if a commands outputs a error message
+    
+### Run the PUT commands
+    curl -i -X PUT -H 'Content-Type: application/json' -d '{"petAge": 3,"petId": 1,"petName": "Balus","petType": "Dog"}' http://localhost:8080/v1/pets/1
+   
+
+## Quarkus 3.2 Microprofile Specifications
 
 By default, there is always the creation of a JAX-RS application class to define the path on which the JAX-RS endpoints are available.
 
