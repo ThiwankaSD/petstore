@@ -10,18 +10,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Pet {
 
 	@Schema(required = true, description = "Pet id")
-	@JsonProperty("pet_id")
+	@JsonProperty("id")
 	private Integer petId;
 
 	@Schema(required = true, description = "Pet type")
-	@JsonProperty("pet_type")
+	@JsonProperty("type")
 	private String petType;
 
 	@Schema(required = true, description = "Pet petName")
-	@JsonProperty("pet_petName")
+	@JsonProperty("name")
 	private String petName;
 
-	@JsonProperty("pet_petAge")
+	@JsonProperty("age")
 	private Integer petAge;
 
 	public Integer getPetId() {

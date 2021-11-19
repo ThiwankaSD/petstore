@@ -23,6 +23,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 @Path("/v1")
 public class PetResource {
@@ -104,16 +105,15 @@ public class PetResource {
 	@POST
     @Path("/pets")
     @Consumes({ "application/json" })
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({ "application/json" })
     @Operation(summary = "Add a new pet to the store", description = "")
     @APIResponses(value = { 
-        @APIResponse(responseCode = "200", description = "Pet Added successfully"),
         @APIResponse(responseCode = "405", description = "Invalid input")
     })
-    public Response addPet(Pet body) {
-		globalpets.add(body);
-        return Response.ok().entity(globalpets).build();
-    }
+	public Response addPet(@RequestBody (required = true) Pet pet) {
+		globalpets.add(pet);
+		return Response.ok().entity(globalpets).build();
+	}
     @POST
     @Path("/petType")
     @Consumes({ "application/json" })
@@ -122,10 +122,9 @@ public class PetResource {
     @APIResponses(value = { 
         @APIResponse(responseCode = "405", description = "Invalid input")
     })
-    public Response addPetType(@Valid PetType body) {
-    	PetType newPetType = new PetType();
-    	newPetType = body;
-        return Response.ok().entity(newPetType).build();
+    public Response addPetType(@RequestBody (required = true) PetType petType) {
+    	globalpettypes.add(petType);
+        return Response.ok().entity(globalpettypes).build();
     }
     @DELETE
     @Path("/pets/{petId}")
@@ -143,7 +142,7 @@ public class PetResource {
 		}else {
 			
 			for(Pet p : globalpets) {
-				if(p.getPetId().intValue() == petId) {
+				if(p.getPetId() == petId) {
 					globalpets.remove(p);
 				}
 			}
@@ -165,7 +164,7 @@ public class PetResource {
 		}else {
 			
 			for(PetType pt : globalpettypes) {
-				if(pt.getId().intValue() == petTypeId) {
+				if(pt.getId() == petTypeId) {
 					globalpettypes.remove(pt);
 				}
 			}
@@ -222,7 +221,7 @@ public class PetResource {
     }
     
     @PUT
-    @Path("/pets")
+    @Path("/pets/{petId}")
     @Consumes({ "application/json" })
     @Produces({ "application/json" })
     @Operation(summary = "Update an existing pet", description = "")
@@ -232,14 +231,24 @@ public class PetResource {
         @APIResponse(responseCode = "404", description = "Pet not found"),
         @APIResponse(responseCode = "405", description = "Validation exception")
     })
-    public Response updatePet(Pet body) {
-    	if(body.getPetId()>0) {
-    		globalpets.add(body);
-    	}
-        return Response.ok().entity(globalpets).build();
+    public Response updatePet(@PathParam("petId") int petId,  @RequestBody Pet newPet) {
+		if (petId < 0) {
+			return Response.status(Status.NOT_FOUND).build();
+		} else {
+			for (Pet p : globalpets) {
+				if (p.getPetId() == petId) {
+					
+					globalpets.remove(p);
+					globalpets.add(newPet);
+					
+					return Response.ok(p).build();
+				}
+	        }
+			return Response.status(Status.NOT_FOUND).build();
+		}
     }
     @PUT
-    @Path("/petType")
+    @Path("/petType/{petId}")
     @Consumes({ "application/json"})
     @Produces({ "application/json"})
     @Operation(summary = "Update an existing petType", description = "")
@@ -248,9 +257,20 @@ public class PetResource {
         @APIResponse(responseCode = "404", description = "PetType not found"),
         @APIResponse(responseCode = "405", description = "Validation exception")
     })
-    public Response updatePetTypes(@Valid PetType body) {
-    	if(body.getId()>0) {
-    		globalpettypes.add(body);
-    	}
-        return Response.ok().entity(globalpettypes).build();
-    }}
+    public Response updatePetTypes(@PathParam("petId") int petTypeId,  @RequestBody PetType newPetType) {
+		if (petTypeId < 0) {
+			return Response.status(Status.NOT_FOUND).build();
+		} else {
+			for (PetType pt : globalpettypes) {
+				if (pt.getId() == petTypeId) {
+					
+					globalpettypes.remove(pt);
+					globalpettypes.add(newPetType);
+					
+					return Response.ok(pt).build();
+				}
+	        }
+			return Response.status(Status.NOT_FOUND).build();
+		}
+    }
+}
