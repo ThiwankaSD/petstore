@@ -42,5 +42,34 @@ public class PetResourceTest {
         .then()
            .statusCode(200);
 	}
-
+	/**
+	 * Test negative ids cannot be search in PetType Model
+	 */
+	@Test
+	public void testNegativeIdsAvoidPetType() {
+		given()
+        .when().get("/v1/petType/-5")
+        .then()
+           .statusCode(405);
+	}
+	/**
+	 * Test Pet Search by name working accordingly
+	 */
+	@Test
+	public void testSearchPetByName() {
+		given()
+        .when().get("/v1/pets/search/Boola")
+        .then()
+           .statusCode(200);
+	}
+	/**
+	 * Test delete pet with id = 1
+	 */
+	@Test
+	public void testDeletePet() {
+		given()
+        .when().delete("/v1/pets/1")
+        .then()
+           .statusCode(500);
+	}
 }
