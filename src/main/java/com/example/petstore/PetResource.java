@@ -19,10 +19,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
-
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 
@@ -59,27 +57,26 @@ public class PetResource {
 		return Response.ok(pets).build();
 	}
 
-//	@APIResponses(value = {
-//			@APIResponse(responseCode = "200", description = "Pet for id", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(ref = "Pet"))),
-//			@APIResponse(responseCode = "404", description = "No Pet found for the id.") })
-//	@GET
-//	@Path("{petId}")
-//	public Response getPet(@PathParam("petId") int petId) {
-//		if (petId < 0) {
-//			return Response.status(Status.NOT_FOUND).build();
-//		}
-//		Pet pet = new Pet();
-//		pet.setPetId(petId);
-//		pet.setPetAge(3);
-//		pet.setPetName("Buula");
-//		pet.setPetType("Dog");
-//
-//		return Response.ok(pet).build();
-//		
-//	}
-// -------------------------------------------------------------------------------------
+	@APIResponses(value = {
+			@APIResponse(responseCode = "200", description = "Pet for id", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(ref = "Pet"))),
+			@APIResponse(responseCode = "404", description = "No Pet found for the id.") })
+	@GET
+	@Path("{petId}")
+	public Response getPet(@PathParam("petId") int petId) {
+		if (petId < 0) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		Pet pet = new Pet();
+		pet.setPetId(petId);
+		pet.setPetAge(3);
+		pet.setPetName("Buula");
+		pet.setPetType("Dog");
+
+		return Response.ok(pet).build();
+		
+	}
 	/*
-	 * Implementation of the controller methods
+	 * ------------------Implementation of the rest of the controller methods -------
 	 */
 	@POST
     @Path("/pets")
@@ -165,18 +162,7 @@ public class PetResource {
     public Response getPetTypes() {
         return Response.ok().entity("magic!").build();
     }
-// ---------- Alternative method for get Pets ----------    
-//    @GET
-//    @Path("/pets")
-//    @Produces({ "application/json" })
-//    @Operation(summary = "Get all pets in the store", description = "")
-//    @APIResponses(value = { 
-//        @APIResponse(responseCode = "200", description = "get pets sucessfully", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Pet.class)))),
-//        @APIResponse(responseCode = "404", description = "Pets not found")
-//    })
-//    public Response getPets() {
-//        return Response.ok().entity("magic!").build();
-//    }
+    
     @PUT
     @Path("/pets")
     @Consumes({ "application/json", "application/xml" })
